@@ -27,7 +27,7 @@
 | 数据清洗与正式EDA | 已完成 | 清洗流水线、6张统计表、6张图和EDA报告 |
 | 标签与历史特征 | 已完成 | 未来30分钟标签、33个模型特征来源、严格时间切分 |
 | 三模型训练与比较 | 已完成 | 三模型指标、XGBoost最终模型和解释产物 |
-| Streamlit Dashboard | 未开始 | 尚无页面代码 |
+| Streamlit Dashboard | 已完成 | 四页面历史回放系统，待端到端集成验收 |
 
 Track A现已包含可复现的数据清洗、正式EDA、未来30分钟标签、历史特征和时间切分代码；当前仍没有训练结果、模型文件或Streamlit页面。
 
@@ -100,6 +100,7 @@ traffic-m3
 - [M2验收记录](reports/M2_ACCEPTANCE_REPORT.md)
 - [M3模型报告](reports/modeling/M3_REPORT.md)
 - [M3验收记录](reports/M3_ACCEPTANCE_REPORT.md)
+- [M4 Dashboard验收记录](reports/M4_ACCEPTANCE_REPORT.md)
 - `data/interim/metr_la_eda_long.parquet`（本地生成，受Git忽略）
 
 ## 开发原则
@@ -134,4 +135,6 @@ traffic-m3
 
 ## 当前开发状态说明
 
-当前位于Track A的`feature/model-pipeline`开发阶段，Phase 3A、M2和M3已完成。最终模型为XGBoost；下一步是Track B Streamlit页面与系统集成。
+当前位于Track B的`feature/streamlit-dashboard`开发阶段，Phase 3A、M2、M3和四页面Dashboard已完成，下一步是端到端集成验收。
+
+Dashboard定位为历史数据回放，不描述为实时交通系统。

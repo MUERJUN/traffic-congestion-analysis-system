@@ -16,7 +16,11 @@ dependencies = [
   "pyarrow>=18.0",
   "scikit-learn>=1.5",
   "xgboost>=3.0",
+  "streamlit>=1.40,<1.41",
 ]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
 
 [project.scripts]
 traffic-phase3 = "traffic_congestion.phase3:main"
