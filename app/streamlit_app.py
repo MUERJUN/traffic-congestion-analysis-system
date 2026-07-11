@@ -24,6 +24,7 @@ from app.dashboard_utils import (  # noqa: E402
     predict_history_row,
     risk_level,
 )
+from src.app.styles import CSS as SHARED_DASHBOARD_CSS  # noqa: E402
 
 
 st.set_page_config(
@@ -32,6 +33,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+st.markdown(SHARED_DASHBOARD_CSS, unsafe_allow_html=True)
 
 st.markdown(
     """

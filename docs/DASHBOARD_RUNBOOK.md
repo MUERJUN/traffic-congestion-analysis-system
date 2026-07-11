@@ -9,8 +9,8 @@ python -m pip install -r requirements-dashboard.txt
 streamlit run streamlit_app.py
 ```
 
-当前提供四页面骨架、统一视觉规范、非实时声明、风险阈值规则，以及 Track A 产物缺失或不兼容时的安全空状态。页面不会生成或展示虚构模型结果。
+当前提供四个可交互页面、统一视觉规范、非实时声明、风险阈值规则，以及Track A产物缺失时的安全空状态。页面不会重新训练或展示虚构模型结果。
 
 ## Track A 对接
 
-Dashboard 查找 `artifacts/eda/dashboard_summary.json`、`artifacts/predictions/replay_cases.json` 和 `artifacts/metrics/model_comparison.json`。JSON 必须声明 `schema_version: "1.0"` 并包含加载器要求的字段。
+Dashboard读取：`reports/eda/tables`、`reports/eda/figures`、`reports/modeling/model_comparison.csv`、`reports/modeling/feature_importance_xgboost.csv`、`reports/modeling/m3_summary.json`、`data/processed/model_dataset/test_features.parquet`和`artifacts/models/xgboost.joblib`。缺失产物时显示明确空状态。
