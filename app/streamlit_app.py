@@ -189,8 +189,14 @@ def page_analysis() -> None:
         st.info("本地模型特征数据不存在，暂时无法生成热力图。")
     else:
         # 只展示整体拥堵率最高的道路，保证页面可读；完整数据仍保留在本地结果中。
-        top_sensors = heatmap.mean(axis=1).sort_values(ascending=False).head(40).index
-        display_heatmap = heatmap.loc[top_sensors]
+        dates = sorted(heatmap["date"].unique())
+        selected_date = st.selectbox("选择热力图日期", dates, index=len(dates) - 1)
+        daily_heatmap = heatmap.loc[heatmap["date"] == selected_date]
+        matrix = daily_heatmap.pivot(
+            index="sensor_id", columns="hour", values="congestion_rate"
+        ).fillna(0)
+        top_sensors = matrix.mean(axis=1).sort_values(ascending=False).head(40).index
+        display_heatmap = matrix.loc[top_sensors].reindex(columns=range(24), fill_value=0)
         figure = go.Figure(
             go.Heatmap(
                 z=display_heatmap.to_numpy() * 100,
@@ -208,6 +214,7 @@ def page_analysis() -> None:
             margin={"l": 80, "r": 20, "t": 20, "b": 60},
         )
         st.plotly_chart(figure, use_container_width=True)
+        st.caption(f"当前日期：{selected_date}。颜色越深表示该道路在对应小时未来30分钟持续拥堵率越高。")
         st.caption("口径：测试集历史回放样本中，该道路在对应小时未来30分钟发生持续拥堵的比例；颜色越深表示拥堵率越高。")
 
     st.subheader("速度趋势")
