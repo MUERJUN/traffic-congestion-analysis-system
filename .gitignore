@@ -2,6 +2,7 @@
 .venv/
 venv/
 __pycache__/
+*.egg-info/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
@@ -44,4 +45,3 @@ artifacts/explanations/*
 *.log
 *.tmp
 ~$*
-

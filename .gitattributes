@@ -8,6 +8,7 @@
 *.yaml text eol=lf
 *.yml text eol=lf
 *.toml text eol=lf
+*.py text eol=lf
 
 # Dataset, model and columnar artifacts must never be newline-normalized
 *.h5 binary
@@ -18,4 +19,3 @@
 *.npz binary
 *.npy binary
 *.onnx binary
-

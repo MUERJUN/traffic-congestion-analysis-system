@@ -1,0 +1,91 @@
+{
+  "base_probability": 0.9997872710227966,
+  "observed_timestamp": "2012-06-08 15:25:00",
+  "observed_sensor_id": "763995",
+  "top_factors": [
+    {
+      "feature": "historical_period_congestion_rate_train",
+      "observed_value": "0.9259259259259259",
+      "reference_value": "0.0",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9914814233779907,
+      "risk_support_delta": 0.008305847644805908
+    },
+    {
+      "feature": "current_speed_ratio",
+      "observed_value": "0.1242",
+      "reference_value": "0.9596153846153846",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9944241642951965,
+      "risk_support_delta": 0.005363106727600098
+    },
+    {
+      "feature": "rolling_speed_ratio_mean_15m",
+      "observed_value": "0.12486666666666525",
+      "reference_value": "0.9571393986789477",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9992691874504089,
+      "risk_support_delta": 0.0005180835723876953
+    },
+    {
+      "feature": "current_speed_mph",
+      "observed_value": "8.625",
+      "reference_value": "63.22222222222222",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9994033575057983,
+      "risk_support_delta": 0.000383913516998291
+    },
+    {
+      "feature": "lag_speed_ratio_30m",
+      "observed_value": "0.13440000000000002",
+      "reference_value": "0.9596706081081082",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9994864463806152,
+      "risk_support_delta": 0.0003008246421813965
+    },
+    {
+      "feature": "rolling_speed_ratio_min_15m",
+      "observed_value": "0.108",
+      "reference_value": "0.9323505654281099",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9995606541633606,
+      "risk_support_delta": 0.00022661685943603516
+    },
+    {
+      "feature": "deviation_from_historical_median_mph",
+      "observed_value": "-4.958333333333332",
+      "reference_value": "0.0",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9996188879013062,
+      "risk_support_delta": 0.00016838312149047852
+    },
+    {
+      "feature": "sensor_id",
+      "observed_value": "763995",
+      "reference_value": "764120",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9996240139007568,
+      "risk_support_delta": 0.00016325712203979492
+    },
+    {
+      "feature": "rolling_speed_ratio_std_30m",
+      "observed_value": "0.01370668853726214",
+      "reference_value": "0.02513510057600656",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9996637105941772,
+      "risk_support_delta": 0.00012356042861938477
+    },
+    {
+      "feature": "speed_change_5m",
+      "observed_value": "1.125",
+      "reference_value": "0.0",
+      "base_probability": 0.9997872710227966,
+      "counterfactual_probability": 0.9996767044067383,
+      "risk_support_delta": 0.00011056661605834961
+    }
+  ],
+  "method": "one-feature-at-a-time train-reference counterfactual; not causal",
+  "actual_target": 1,
+  "selected_model": "XGBoost",
+  "risk_level": "high"
+}

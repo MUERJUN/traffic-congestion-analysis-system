@@ -1,0 +1,53 @@
+{
+  "analysis_scope": "descriptive EDA only; no supervised future label or model training",
+  "main_zero_rule": "zero treated as missing candidate",
+  "valid_observations": 6519002,
+  "missing_candidate_observations": 575302,
+  "systemwide_zero_timestamps": 2148,
+  "lowest_network_median_hour": 17,
+  "lowest_network_hour_median_speed": 59.5,
+  "lowest_weekday_hour_day": "Thursday",
+  "lowest_weekday_hour": 17,
+  "lowest_weekday_hour_median_speed": 44.125,
+  "weekday_7_9_mean_of_hourly_medians": 60.583333333333336,
+  "weekend_7_9_mean_of_hourly_medians": 66.125,
+  "weekday_vs_weekend_7_9_speed_difference": -5.541666666666664,
+  "top_risk_sensor": "716339",
+  "top_risk_sensor_congestion_rate_60": 0.5062529237486356,
+  "top_risk_sensor_coverage": 0.9356034080298786,
+  "risk_rank_spearman_50_vs_60": 0.9757565671981037,
+  "risk_rank_spearman_60_vs_70": 0.9707926096697731,
+  "zero_sensitivity": {
+    "average_hourly_median_gap_mph": 0.8125826719576713,
+    "maximum_hourly_median_gap_mph": 1.7222222222222214,
+    "average_daily_mean_gap_mph": 4.742486404916967,
+    "maximum_daily_mean_gap_mph": 51.33052530723174
+  },
+  "event_profile": {
+    "matched_event_count": 34290,
+    "unmatched_event_count": 491,
+    "minimum_event_duration_minutes": 15,
+    "event_ratio_minus_60": 0.8291267672201217,
+    "event_ratio_minus_30": 0.7350989382239381,
+    "event_ratio_minus_15": 0.6990476700677468,
+    "event_ratio_at_start": 0.5,
+    "control_ratio_minus_15": 0.9612794612794613,
+    "control_ratio_at_event_time": 0.9594594594594595
+  },
+  "tables": [
+    "reports\\eda\\tables\\hourly_speed_pattern.csv",
+    "reports\\eda\\tables\\weekday_hour_speed.csv",
+    "reports\\eda\\tables\\day_type_hour_speed.csv",
+    "reports\\eda\\tables\\sensor_risk_ranking.csv",
+    "reports\\eda\\tables\\daily_speed_trend.csv",
+    "reports\\eda\\tables\\pre_congestion_profile.csv"
+  ],
+  "figures": [
+    "reports\\eda\\figures\\hourly_speed_pattern.png",
+    "reports\\eda\\figures\\weekday_hour_heatmap.png",
+    "reports\\eda\\figures\\weekday_weekend_pattern.png",
+    "reports\\eda\\figures\\sensor_congestion_ranking.png",
+    "reports\\eda\\figures\\daily_speed_trend.png",
+    "reports\\eda\\figures\\pre_congestion_profile.png"
+  ]
+}
