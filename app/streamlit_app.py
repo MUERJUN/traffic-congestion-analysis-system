@@ -48,6 +48,41 @@ st.markdown(
 )
 
 
+def format_replay_timestamp(value: object) -> str:
+    """Use an unambiguous 24-hour timestamp in the replay controls."""
+    parsed = pd.to_datetime(value, errors="coerce")
+    if pd.isna(parsed):
+        return str(value)
+    return parsed.strftime("%Y-%m-%d %H:%M")
+
+
+def format_factor_table(frame: pd.DataFrame) -> pd.DataFrame:
+    result = frame.copy()
+    for column in ("当前值", "训练参考值"):
+        if column in result:
+            result[column] = result[column].map(
+                lambda value: f"{float(value):.3f}" if pd.notna(value) else "-"
+            )
+    if "风险支持变化" in result:
+        result["风险支持变化"] = result["风险支持变化"].map(
+            lambda value: f"{float(value):+.4f}" if pd.notna(value) else "-"
+        )
+        result["影响方向"] = result["风险支持变化"].map(
+            lambda value: "提高拥堵风险" if float(value) > 0 else "降低拥堵风险"
+        )
+    return result
+
+
+def risk_badge(level: str) -> None:
+    colors = {"高风险": "#ef4444", "中风险": "#f59e0b", "低风险": "#22c55e"}
+    color = colors.get(level, "#64748b")
+    st.markdown(
+        f'<div style="display:inline-block;padding:.35rem .75rem;border-radius:999px;'
+        f'background:{color};color:white;font-weight:700">风险等级：{level}</div>',
+        unsafe_allow_html=True,
+    )
+
+
 def show_replay_banner() -> None:
     st.markdown(
         '<div class="replay-banner">历史交通数据回放平台：页面结果来自METR-LA历史样本，不是实时交通系统。</div>',
@@ -160,8 +195,11 @@ def page_prediction() -> None:
     timestamps = history["timestamp"].astype(str).tolist()
     timestamp = st.selectbox("历史回放时点", timestamps, index=len(timestamps) - 1)
     row = history.loc[history["timestamp"].astype(str) == timestamp].iloc[[0]].copy()
+    st.caption(f"回放时间：{format_replay_timestamp(timestamp)}")
     probability = predict_history_row(model, row)
     level = risk_level(probability)
+    risk_badge(level)
+    st.info(f"预测摘要：未来30分钟拥堵概率为 {probability:.1%}，当前风险等级为{level}。")
     ratio = float(row.iloc[0]["current_speed_ratio"])
     state = "当前低速状态" if ratio < 0.60 else "当前非低速状态"
 
@@ -192,7 +230,14 @@ def page_prediction() -> None:
         factors = factors[["feature", "observed_value", "reference_value", "risk_support_delta"]].copy()
         factors = localize_feature_column(factors)
         factors.columns = ["因素", "当前值", "训练参考值", "风险支持变化"]
-        st.dataframe(factors.head(5), use_container_width=True, hide_index=True)
+        factors = format_factor_table(factors.head(5))
+        st.dataframe(factors, use_container_width=True, hide_index=True)
+        top_factor = factors.iloc[0]
+        st.info(
+            f"当前最主要信号是“{top_factor['因素']}”，当前值为 "
+            f"{top_factor['当前值']}，相对训练参考值 {top_factor['训练参考值']}，"
+            f"单因素风险支持变化为 {top_factor['风险支持变化']}。"
+        )
         st.caption("风险支持变化为单因素训练参考反事实对照，不是因果效应。")
 
     st.subheader("历史评估标签")
