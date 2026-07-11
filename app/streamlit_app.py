@@ -73,6 +73,33 @@ def format_factor_table(frame: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
+def format_model_metrics(frame: pd.DataFrame, selected_model: str) -> pd.DataFrame:
+    result = frame.copy()
+    result.insert(0, "最终选择", result["model"].eq(selected_model).map({True: "✓", False: ""}))
+    result["model"] = result["model"].replace(
+        {"Logistic Regression": "逻辑回归", "Random Forest": "随机森林", "XGBoost": "XGBoost"}
+    )
+    rename = {
+        "model": "模型",
+        "accuracy": "准确率",
+        "precision": "精确率",
+        "recall": "召回率",
+        "f1": "F1分数",
+        "roc_auc": "ROC-AUC",
+        "threshold": "分类阈值",
+        "validation_f1": "验证集F1",
+        "validation_recall": "验证集召回率",
+        "validation_roc_auc": "验证集ROC-AUC",
+    }
+    result = result.rename(columns=rename)
+    for column in result.columns:
+        if column not in ("最终选择", "模型"):
+            result[column] = result[column].map(
+                lambda value: f"{float(value):.4f}" if pd.notna(value) else "-"
+            )
+    return result
+
+
 def risk_badge(level: str) -> None:
     colors = {"高风险": "#ef4444", "中风险": "#f59e0b", "低风险": "#22c55e"}
     color = colors.get(level, "#64748b")
@@ -259,7 +286,7 @@ def page_report() -> None:
         f"最终模型：{selected}；Validation F1={selected_result['validation']['f1']:.4f}，"
         f"Test F1={selected_result['test']['f1']:.4f}。"
     )
-    st.dataframe(metrics, use_container_width=True, hide_index=True)
+    st.dataframe(format_model_metrics(metrics, selected), use_container_width=True, hide_index=True)
     st.image(load_image_bytes("reports/modeling/figures/model_comparison.png"), use_container_width=True)
     st.image(load_image_bytes("reports/modeling/figures/test_roc_curves.png"), use_container_width=True)
 
