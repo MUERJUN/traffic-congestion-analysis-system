@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 APP_DIR = Path(__file__).resolve().parent
@@ -17,6 +18,7 @@ from app.dashboard_utils import (  # noqa: E402
     ROOT as PROJECT_ROOT,
     explain_history_row,
     load_csv,
+    load_congestion_heatmap,
     load_image_bytes,
     load_json,
     load_model,
@@ -180,6 +182,33 @@ def page_analysis() -> None:
     ].copy()
     display_risk.columns = ["传感器", "有效覆盖率", "描述性拥堵率", "平均事件持续分钟"]
     st.dataframe(display_risk, use_container_width=True, hide_index=True)
+
+    st.subheader("道路—小时拥堵热力图")
+    heatmap = load_congestion_heatmap()
+    if heatmap.empty:
+        st.info("本地模型特征数据不存在，暂时无法生成热力图。")
+    else:
+        # 只展示整体拥堵率最高的道路，保证页面可读；完整数据仍保留在本地结果中。
+        top_sensors = heatmap.mean(axis=1).sort_values(ascending=False).head(40).index
+        display_heatmap = heatmap.loc[top_sensors]
+        figure = go.Figure(
+            go.Heatmap(
+                z=display_heatmap.to_numpy() * 100,
+                x=[f"{int(hour):02d}:00" for hour in display_heatmap.columns],
+                y=display_heatmap.index.astype(str),
+                colorscale="YlOrRd",
+                colorbar={"title": "拥堵率（%）"},
+                hovertemplate="传感器 %{y}<br>时间 %{x}<br>拥堵率 %{z:.1f}%<extra></extra>",
+            )
+        )
+        figure.update_layout(
+            height=720,
+            xaxis_title="小时",
+            yaxis_title="道路传感器（按整体拥堵率排序）",
+            margin={"l": 80, "r": 20, "t": 20, "b": 60},
+        )
+        st.plotly_chart(figure, use_container_width=True)
+        st.caption("口径：测试集历史回放样本中，该道路在对应小时未来30分钟发生持续拥堵的比例；颜色越深表示拥堵率越高。")
 
     st.subheader("速度趋势")
     trend = daily.set_index("date")[["mean_speed_valid", "mean_speed_keep_zero"]]

@@ -101,6 +101,24 @@ def load_sensor_history(sensor_id: str) -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False)
+def load_congestion_heatmap() -> pd.DataFrame:
+    """Build an hour-by-sensor congestion-rate matrix from the held-out replay set."""
+    path = ROOT / "data/processed/model_dataset/test_features.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    frame = pd.read_parquet(
+        path,
+        columns=["sensor_id", "hour", "target_congestion_30m"],
+    )
+    grouped = (
+        frame.groupby(["sensor_id", "hour"], as_index=False)["target_congestion_30m"]
+        .mean()
+        .rename(columns={"target_congestion_30m": "congestion_rate"})
+    )
+    return grouped.pivot(index="sensor_id", columns="hour", values="congestion_rate").fillna(0)
+
+
+@st.cache_data(show_spinner=False)
 def load_train_reference() -> pd.DataFrame:
     path = ROOT / "data/processed/model_dataset/train_features.parquet"
     if not path.exists():
