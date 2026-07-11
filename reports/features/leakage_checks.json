@@ -1,0 +1,59 @@
+{
+  "status": "PASS",
+  "random_split_used": false,
+  "training_statistics_observation_end": "2012-05-23 07:05:00",
+  "validation_observation_start": "2012-05-23 07:10:00",
+  "test_observation_start": "2012-06-04 04:45:00",
+  "feature_source_offsets": "-12 through 0 only",
+  "target_source_offsets": "+1 through +6 only",
+  "history_and_target_windows_confined_to_each_split": true,
+  "free_flow_fitted_on_training_only": true,
+  "historical_period_statistics_fitted_on_training_only": true,
+  "split_sample_time_ranges_do_not_overlap": true,
+  "stored_dataset_checks": {
+    "train": {
+      "rows_match_summary": true,
+      "column_count": 36,
+      "missing_required_columns": [],
+      "total_null_values": 0,
+      "timestamp_sensor_keys_unique": true,
+      "sensor_count": 207,
+      "target_domain": [
+        0,
+        1
+      ],
+      "contains_both_target_classes": true,
+      "status": "PASS"
+    },
+    "validation": {
+      "rows_match_summary": true,
+      "column_count": 36,
+      "missing_required_columns": [],
+      "total_null_values": 0,
+      "timestamp_sensor_keys_unique": true,
+      "sensor_count": 207,
+      "target_domain": [
+        0,
+        1
+      ],
+      "contains_both_target_classes": true,
+      "status": "PASS"
+    },
+    "test": {
+      "rows_match_summary": true,
+      "column_count": 36,
+      "missing_required_columns": [],
+      "total_null_values": 0,
+      "timestamp_sensor_keys_unique": true,
+      "sensor_count": 207,
+      "target_domain": [
+        0,
+        1
+      ],
+      "contains_both_target_classes": true,
+      "status": "PASS"
+    }
+  },
+  "imputation_using_future_values": false,
+  "test_used_for_tuning": false
+}

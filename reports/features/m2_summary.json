@@ -1,0 +1,232 @@
+{
+  "stage": "M2 - labels, historical features, and time split",
+  "model_training_performed": false,
+  "source_sha256": "64784b76d6fb8ec9bff4b6decafb354da2bb37840468fdccee5044e511277c05",
+  "config": {
+    "source_h5": "data/raw/metr-la.h5",
+    "expected_source_sha256": "64784b76d6fb8ec9bff4b6decafb354da2bb37840468fdccee5044e511277c05",
+    "output_dir": "data/processed/model_dataset",
+    "report_dir": "reports/features",
+    "train_ratio": 0.7,
+    "validation_ratio": 0.1,
+    "test_ratio": 0.2,
+    "history_steps": 12,
+    "future_steps": 6,
+    "free_flow_quantile": 0.85,
+    "congestion_threshold": 0.6,
+    "sensitivity_thresholds": [
+      0.5,
+      0.6,
+      0.7
+    ],
+    "minimum_congested_future_steps": 3
+  },
+  "feature_columns": [
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "hour_sin",
+    "hour_cos",
+    "day_of_week_sin",
+    "day_of_week_cos",
+    "current_speed_mph",
+    "free_flow_speed_train_mph",
+    "current_speed_ratio",
+    "lag_speed_ratio_5m",
+    "lag_speed_ratio_10m",
+    "lag_speed_ratio_15m",
+    "lag_speed_ratio_30m",
+    "lag_speed_ratio_60m",
+    "rolling_speed_ratio_mean_15m",
+    "rolling_speed_ratio_min_15m",
+    "rolling_speed_ratio_std_15m",
+    "rolling_speed_ratio_mean_30m",
+    "rolling_speed_ratio_min_30m",
+    "rolling_speed_ratio_std_30m",
+    "rolling_speed_ratio_mean_60m",
+    "rolling_speed_ratio_min_60m",
+    "rolling_speed_ratio_std_60m",
+    "trend_speed_mph_per_min_10m",
+    "trend_speed_mph_per_min_15m",
+    "trend_speed_mph_per_min_30m",
+    "speed_change_5m",
+    "consecutive_decline_steps",
+    "historical_period_median_speed_mph_train",
+    "historical_period_congestion_rate_train",
+    "deviation_from_historical_median_mph"
+  ],
+  "numeric_feature_count": 32,
+  "categorical_feature_columns": [
+    "sensor_id"
+  ],
+  "model_feature_count": 33,
+  "metadata_columns": [
+    "timestamp",
+    "sensor_id",
+    "split"
+  ],
+  "target_column": "target_congestion_30m",
+  "segments": [
+    {
+      "name": "train",
+      "observation_start_index": 0,
+      "observation_end_index": 23989,
+      "observation_count": 23990,
+      "observation_start_timestamp": "2012-03-01 00:00:00",
+      "observation_end_timestamp": "2012-05-23 07:05:00",
+      "sample_start_index_after_history_purge": 12,
+      "sample_end_index_before_future_purge": 23983,
+      "sample_start_timestamp_after_history_purge": "2012-03-01 01:00:00",
+      "sample_end_timestamp_before_future_purge": "2012-05-23 06:35:00"
+    },
+    {
+      "name": "validation",
+      "observation_start_index": 23990,
+      "observation_end_index": 27416,
+      "observation_count": 3427,
+      "observation_start_timestamp": "2012-05-23 07:10:00",
+      "observation_end_timestamp": "2012-06-04 04:40:00",
+      "sample_start_index_after_history_purge": 24002,
+      "sample_end_index_before_future_purge": 27410,
+      "sample_start_timestamp_after_history_purge": "2012-05-23 08:10:00",
+      "sample_end_timestamp_before_future_purge": "2012-06-04 04:10:00"
+    },
+    {
+      "name": "test",
+      "observation_start_index": 27417,
+      "observation_end_index": 34271,
+      "observation_count": 6855,
+      "observation_start_timestamp": "2012-06-04 04:45:00",
+      "observation_end_timestamp": "2012-06-27 23:55:00",
+      "sample_start_index_after_history_purge": 27429,
+      "sample_end_index_before_future_purge": 34265,
+      "sample_start_timestamp_after_history_purge": "2012-06-04 05:45:00",
+      "sample_end_timestamp_before_future_purge": "2012-06-27 23:25:00"
+    }
+  ],
+  "split_outputs": {
+    "train": {
+      "candidate_after_boundary": 4962204,
+      "excluded_incomplete_history": 525903,
+      "excluded_incomplete_future": 75235,
+      "usable_samples": 4361066,
+      "positive_labels": {
+        "0.5": 318872,
+        "0.6": 418485,
+        "0.7": 500135
+      },
+      "first_timestamp": "2012-03-01 01:25:00",
+      "last_timestamp": "2012-05-23 06:35:00",
+      "positive_rates": {
+        "0.5": 0.07311790282467635,
+        "0.6": 0.09595933654753219,
+        "0.7": 0.11468182320561074
+      },
+      "path": "data\\processed\\model_dataset\\train_features.parquet",
+      "bytes": 348883045,
+      "sha256": "991f1668e291e5c8305ced0bb6e0fed3d2e1de5254059de2859cb71279f290fb",
+      "columns": 36
+    },
+    "validation": {
+      "candidate_after_boundary": 705663,
+      "excluded_incomplete_history": 75142,
+      "excluded_incomplete_future": 12430,
+      "usable_samples": 618091,
+      "positive_labels": {
+        "0.5": 47993,
+        "0.6": 60987,
+        "0.7": 71322
+      },
+      "first_timestamp": "2012-05-23 08:10:00",
+      "last_timestamp": "2012-06-04 04:10:00",
+      "positive_rates": {
+        "0.5": 0.07764714257285739,
+        "0.6": 0.09866993695103148,
+        "0.7": 0.11539077579191413
+      },
+      "path": "data\\processed\\model_dataset\\validation_features.parquet",
+      "bytes": 55956272,
+      "sha256": "510913b5325620d757a5407713bac6947e41b1542a140f9509a6f8289e2fbd75",
+      "columns": 36
+    },
+    "test": {
+      "candidate_after_boundary": 1415259,
+      "excluded_incomplete_history": 235367,
+      "excluded_incomplete_future": 30431,
+      "usable_samples": 1149461,
+      "positive_labels": {
+        "0.5": 105437,
+        "0.6": 134792,
+        "0.7": 158215
+      },
+      "first_timestamp": "2012-06-04 05:45:00",
+      "last_timestamp": "2012-06-27 23:25:00",
+      "positive_rates": {
+        "0.5": 0.09172734003154522,
+        "0.6": 0.11726539656412875,
+        "0.7": 0.13764277343902925
+      },
+      "path": "data\\processed\\model_dataset\\test_features.parquet",
+      "bytes": 99878523,
+      "sha256": "68a1bf2ec8c60da01200eadb0e72463bb34f6d543c948e74b0b6970da987a54d",
+      "columns": 36
+    }
+  },
+  "stored_dataset_checks": {
+    "train": {
+      "rows_match_summary": true,
+      "column_count": 36,
+      "missing_required_columns": [],
+      "total_null_values": 0,
+      "timestamp_sensor_keys_unique": true,
+      "sensor_count": 207,
+      "target_domain": [
+        0,
+        1
+      ],
+      "contains_both_target_classes": true,
+      "status": "PASS"
+    },
+    "validation": {
+      "rows_match_summary": true,
+      "column_count": 36,
+      "missing_required_columns": [],
+      "total_null_values": 0,
+      "timestamp_sensor_keys_unique": true,
+      "sensor_count": 207,
+      "target_domain": [
+        0,
+        1
+      ],
+      "contains_both_target_classes": true,
+      "status": "PASS"
+    },
+    "test": {
+      "rows_match_summary": true,
+      "column_count": 36,
+      "missing_required_columns": [],
+      "total_null_values": 0,
+      "timestamp_sensor_keys_unique": true,
+      "sensor_count": 207,
+      "target_domain": [
+        0,
+        1
+      ],
+      "contains_both_target_classes": true,
+      "status": "PASS"
+    }
+  },
+  "training_statistics": {
+    "sensor_statistics_path": "reports\\features\\training_sensor_statistics.csv",
+    "sensor_rows": 207,
+    "period_statistics_path": "data\\processed\\model_dataset\\training_period_statistics.parquet",
+    "period_rows": 119232,
+    "period_file_sha256": "49c3e8c7511f492b260ffc3b509a1086785cd2ef6da16461ae4781a0007ea16e"
+  },
+  "free_flow_summary": {
+    "minimum_mph": 36.22222222222222,
+    "median_mph": 66.375,
+    "maximum_mph": 70.0
+  },
+  "leakage_check_path": "reports\\features\\leakage_checks.json"
+}
