@@ -1,0 +1,54 @@
+{
+  "source_sha256": "64784b76d6fb8ec9bff4b6decafb354da2bb37840468fdccee5044e511277c05",
+  "source_shape": [
+    34272,
+    207
+  ],
+  "total_observations": 7094304,
+  "positive_valid_observations": 6519002,
+  "positive_valid_rate": 0.9189064917432351,
+  "zero_observations": 575302,
+  "zero_rate": 0.08109350825676487,
+  "systemwide_zero_timestamps": 2148,
+  "majority_zero_timestamps": 2149,
+  "long_zero_run_threshold_steps": 12,
+  "long_zero_run_threshold_minutes": 60,
+  "observations_in_long_zero_runs": 521515,
+  "large_jump_threshold_mph": 40.0,
+  "large_jump_observations": 47405,
+  "large_jumps_adjacent_to_zero": 46100,
+  "large_jumps_between_positive_values": 1305,
+  "cleaning_rule": "speed_valid keeps finite values > 0; raw values remain unchanged",
+  "imputation_applied": false,
+  "parquet": {
+    "path": "data\\interim\\metr_la_eda_long.parquet",
+    "rows": 7094304,
+    "columns": 16,
+    "bytes": 26164859,
+    "sha256": "316aaa550a7c3d66d0f7032653b6f85111463bb5e8f8a50cc186824bcdc952ec"
+  },
+  "structure_validation": {
+    "rows": 34272,
+    "sensors": 207,
+    "observations": 7094304,
+    "start": "2012-03-01 00:00:00",
+    "end": "2012-06-27 23:55:00",
+    "interval_minutes": 5,
+    "duplicate_timestamps": 0,
+    "duplicate_sensor_ids": 0
+  },
+  "location_match_count": 207,
+  "config": {
+    "source_h5": "data/raw/metr-la.h5",
+    "locations_csv": "data/metadata/graph_sensor_locations.csv",
+    "expected_source_sha256": "64784b76d6fb8ec9bff4b6decafb354da2bb37840468fdccee5044e511277c05",
+    "clean_long_parquet": "data/interim/metr_la_eda_long.parquet",
+    "cleaning_report_dir": "reports/data_cleaning",
+    "eda_table_dir": "reports/eda/tables",
+    "eda_figure_dir": "reports/eda/figures",
+    "majority_zero_threshold": 0.5,
+    "long_zero_run_steps": 12,
+    "large_jump_mph": 40.0,
+    "parquet_chunk_time_steps": 2016
+  }
+}

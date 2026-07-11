@@ -24,11 +24,11 @@
 | Phase 1：项目设计 | 已完成 | `PROJECT_DESIGN_OUTLINE.md` |
 | Phase 2：数据获取与审计 | 已完成 | `reports/data_audit`、`reports/eda_preparation` |
 | 开发管理基线 | 本轮已建立，待确认 | `docs`、双轨分支规划、验收标准 |
-| 数据清洗与正式EDA | 未开始 | 等待确认后开发 |
+| 数据清洗与正式EDA | 已完成 | 清洗流水线、6张统计表、6张图和EDA报告 |
 | 标签、特征与模型 | 未开始 | 尚无训练结果和模型文件 |
 | Streamlit Dashboard | 未开始 | 尚无页面代码 |
 
-当前仓库没有业务代码、Notebook、训练结果或Streamlit页面。
+Track A现已包含可复现的数据清洗与正式EDA代码和测试；当前仍没有监督标签、训练结果、模型文件或Streamlit页面。
 
 ## 数据来源
 
@@ -79,6 +79,21 @@
 
 整体路线与轨道依赖见 [DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md)，各阶段放行条件见 [ACCEPTANCE_CRITERIA.md](docs/ACCEPTANCE_CRITERIA.md)。
 
+## Phase 3A运行
+
+```powershell
+python -m pip install -e .
+python -m unittest discover -s tests -v
+traffic-phase3
+```
+
+主要输出：
+
+- [数据清洗报告](reports/data_cleaning/DATA_CLEANING_REPORT.md)
+- [正式EDA报告](reports/eda/EDA_REPORT.md)
+- [Phase 3A验收记录](reports/PHASE3A_ACCEPTANCE_REPORT.md)
+- `data/interim/metr_la_eda_long.parquet`（本地生成，受Git忽略）
+
 ## 开发原则
 
 1. 时间序列不随机切分。
@@ -94,10 +109,16 @@
 ```text
 .
 ├── data/                         # 本地数据；原始/处理数据默认不提交
+├── config/                       # 可复现运行配置
 ├── docs/                         # 开发计划、双轨规格和验收标准
 ├── reports/
 │   ├── data_audit/               # 数据来源、字典、审计报告与质量表
+│   ├── data_cleaning/            # Phase 3A清洗报告与统计
+│   ├── eda/                      # 正式EDA报告、表格和图表
 │   └── eda_preparation/          # EDA准备方案
+├── src/traffic_congestion/       # Track A清洗与EDA实现
+├── tests/                        # 自动测试
+├── pyproject.toml                # Python项目与依赖
 ├── PROJECT_DESIGN_OUTLINE.md     # 已确认的项目设计基线
 ├── PROJECT_STATUS.md             # 当前阶段状态
 └── README.md
@@ -105,5 +126,4 @@
 
 ## 当前开发状态说明
 
-本轮仅完成仓库接管、开发规划和文档基线。待规划确认后，才会从同一 `main` 基线创建两条功能分支并开始编码。
-
+当前位于Track A的`feature/model-pipeline`开发阶段，Phase 3A已完成。下一步是M2标签、历史特征和严格时间切分；模型训练与Streamlit页面仍未开始。
