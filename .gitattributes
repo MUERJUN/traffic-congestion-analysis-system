@@ -1,0 +1,21 @@
+* text=auto
+
+# Documentation and machine-readable text use stable LF endings
+*.md text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+
+# Dataset, model and columnar artifacts must never be newline-normalized
+*.h5 binary
+*.hdf5 binary
+*.pkl binary
+*.joblib binary
+*.parquet binary
+*.npz binary
+*.npy binary
+*.onnx binary
+

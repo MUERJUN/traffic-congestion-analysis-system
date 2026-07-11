@@ -1,0 +1,47 @@
+# Local environments and Python caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local secrets and environment variables
+.env
+.env.*
+!.env.example
+
+# Raw/intermediate datasets are reproducible local assets, not Git content
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# Generated model and experiment artifacts
+artifacts/models/*
+artifacts/metrics/*
+artifacts/figures/*
+artifacts/explanations/*
+!artifacts/models/.gitkeep
+!artifacts/metrics/.gitkeep
+!artifacts/figures/.gitkeep
+!artifacts/explanations/.gitkeep
+
+# Streamlit local configuration and caches
+.streamlit/secrets.toml
+.streamlit/cache/
+
+# Logs and temporary files
+*.log
+*.tmp
+~$*
+
