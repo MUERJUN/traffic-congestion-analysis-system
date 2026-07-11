@@ -14,11 +14,14 @@ dependencies = [
   "numpy>=2.0",
   "pandas>=2.2",
   "pyarrow>=18.0",
+  "scikit-learn>=1.5",
+  "xgboost>=3.0",
 ]
 
 [project.scripts]
 traffic-phase3 = "traffic_congestion.phase3:main"
 traffic-m2 = "traffic_congestion.m2:main"
+traffic-m3 = "traffic_congestion.m3:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

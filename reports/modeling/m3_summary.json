@@ -1,0 +1,307 @@
+{
+  "stage": "M3 - model training, comparison, and explanation",
+  "model_training_performed": true,
+  "test_used_for_tuning": false,
+  "train_rows_available": 4361066,
+  "train_rows_used": 1000000,
+  "validation_rows": 618091,
+  "test_rows": 1149461,
+  "train_sampling": {
+    "max_rows": 1000000,
+    "random_state": 42,
+    "positive_rows": 96043,
+    "negative_rows": 903957,
+    "xgboost_scale_pos_weight": 9.41200295700884
+  },
+  "model_results": [
+    {
+      "model": "Logistic Regression",
+      "train_rows_used": 1000000,
+      "train_rows_available": 4361066,
+      "validation": {
+        "threshold": 0.8599999999999995,
+        "accuracy": 0.970756733231838,
+        "precision": 0.8473643310452014,
+        "recall": 0.858215685309984,
+        "f1": 0.8527554885748034,
+        "roc_auc": 0.984844427023007,
+        "confusion_matrix": [
+          [
+            547676,
+            9428
+          ],
+          [
+            8647,
+            52340
+          ]
+        ],
+        "positive_rate": 0.0999335049369753,
+        "actual_positive_rate": 0.09866993695103148
+      },
+      "test": {
+        "threshold": 0.8599999999999995,
+        "accuracy": 0.9657413344167397,
+        "precision": 0.8510541226682365,
+        "recall": 0.8580182800166182,
+        "f1": 0.8545220125089125,
+        "roc_auc": 0.9846067661639257,
+        "confusion_matrix": [
+          [
+            994428,
+            20241
+          ],
+          [
+            19138,
+            115654
+          ]
+        ],
+        "positive_rate": 0.11822497674997239,
+        "actual_positive_rate": 0.11726539656412875
+      },
+      "validation_threshold": {
+        "threshold": 0.8599999999999995,
+        "f1": 0.8527554885748034,
+        "recall": 0.858215685309984,
+        "precision": 0.8473643310452014
+      },
+      "artifact_path": "artifacts\\models\\logistic_regression.joblib",
+      "artifact_sha256": "e3fce956fe1ecb1877b75b95d134e0cf24c16186af4661a514abb4012f3152a0",
+      "top_global_features": [
+        {
+          "feature": "sensor_id (one-hot)",
+          "importance": 164.10337228784607
+        },
+        {
+          "feature": "historical_period_congestion_rate_train",
+          "importance": 1.116753131095175
+        },
+        {
+          "feature": "current_speed_ratio",
+          "importance": 0.8113297846248679
+        },
+        {
+          "feature": "rolling_speed_ratio_min_15m",
+          "importance": 0.7101824749069
+        },
+        {
+          "feature": "hour_cos",
+          "importance": 0.6129239060715141
+        },
+        {
+          "feature": "lag_speed_ratio_30m",
+          "importance": 0.6033321544339145
+        },
+        {
+          "feature": "rolling_speed_ratio_min_30m",
+          "importance": 0.5538318039499048
+        },
+        {
+          "feature": "lag_speed_ratio_5m",
+          "importance": 0.5021036838356611
+        },
+        {
+          "feature": "rolling_speed_ratio_mean_15m",
+          "importance": 0.4873325235085759
+        },
+        {
+          "feature": "rolling_speed_ratio_mean_60m",
+          "importance": 0.45781542643788337
+        }
+      ]
+    },
+    {
+      "model": "Random Forest",
+      "train_rows_used": 1000000,
+      "train_rows_available": 4361066,
+      "validation": {
+        "threshold": 0.7399999999999997,
+        "accuracy": 0.971229155577415,
+        "precision": 0.8360296176461438,
+        "recall": 0.881253381868267,
+        "f1": 0.8580460274759925,
+        "roc_auc": 0.9878893534266249,
+        "confusion_matrix": [
+          [
+            546563,
+            10541
+          ],
+          [
+            7242,
+            53745
+          ]
+        ],
+        "positive_rate": 0.10400733872520389,
+        "actual_positive_rate": 0.09866993695103148
+      },
+      "test": {
+        "threshold": 0.7399999999999997,
+        "accuracy": 0.9658874898756895,
+        "precision": 0.8357088165668004,
+        "recall": 0.8826117276989732,
+        "f1": 0.858520146202945,
+        "roc_auc": 0.9870598085695121,
+        "confusion_matrix": [
+          [
+            991281,
+            23388
+          ],
+          [
+            15823,
+            118969
+          ]
+        ],
+        "positive_rate": 0.12384674208172353,
+        "actual_positive_rate": 0.11726539656412875
+      },
+      "validation_threshold": {
+        "threshold": 0.7399999999999997,
+        "f1": 0.8580460274759925,
+        "recall": 0.881253381868267,
+        "precision": 0.8360296176461438
+      },
+      "artifact_path": "artifacts\\models\\random_forest.joblib",
+      "artifact_sha256": "7280eb50a699566b8af4198798ab4c2bc2112ae13f81209a31c3f8f679de0c32",
+      "top_global_features": [
+        {
+          "feature": "rolling_speed_ratio_min_15m",
+          "importance": 0.10281534021744815
+        },
+        {
+          "feature": "rolling_speed_ratio_min_30m",
+          "importance": 0.09830224888690231
+        },
+        {
+          "feature": "current_speed_ratio",
+          "importance": 0.09809429384466668
+        },
+        {
+          "feature": "rolling_speed_ratio_min_60m",
+          "importance": 0.08904404396290978
+        },
+        {
+          "feature": "current_speed_mph",
+          "importance": 0.08838209814091948
+        },
+        {
+          "feature": "lag_speed_ratio_5m",
+          "importance": 0.05639981659791689
+        },
+        {
+          "feature": "historical_period_congestion_rate_train",
+          "importance": 0.05086646249254396
+        },
+        {
+          "feature": "rolling_speed_ratio_mean_30m",
+          "importance": 0.04918464772101953
+        },
+        {
+          "feature": "rolling_speed_ratio_mean_15m",
+          "importance": 0.04653423416053973
+        },
+        {
+          "feature": "lag_speed_ratio_10m",
+          "importance": 0.042452490051282335
+        }
+      ]
+    },
+    {
+      "model": "XGBoost",
+      "train_rows_used": 1000000,
+      "train_rows_available": 4361066,
+      "validation": {
+        "threshold": 0.8499999999999996,
+        "accuracy": 0.9728680728242282,
+        "precision": 0.8526807791089062,
+        "recall": 0.8764490793119846,
+        "f1": 0.8644015718744441,
+        "roc_auc": 0.989385762373912,
+        "confusion_matrix": [
+          [
+            547869,
+            9235
+          ],
+          [
+            7535,
+            53452
+          ]
+        ],
+        "positive_rate": 0.10142034101774658,
+        "actual_positive_rate": 0.09866993695103148
+      },
+      "test": {
+        "threshold": 0.8499999999999996,
+        "accuracy": 0.967991954489974,
+        "precision": 0.855103342319622,
+        "recall": 0.8753783607335747,
+        "f1": 0.865122076398563,
+        "roc_auc": 0.9887020250930261,
+        "confusion_matrix": [
+          [
+            994675,
+            19994
+          ],
+          [
+            16798,
+            117994
+          ]
+        ],
+        "positive_rate": 0.12004583017605643,
+        "actual_positive_rate": 0.11726539656412875
+      },
+      "validation_threshold": {
+        "threshold": 0.8499999999999996,
+        "f1": 0.8644015718744441,
+        "recall": 0.8764490793119846,
+        "precision": 0.8526807791089062
+      },
+      "artifact_path": "artifacts\\models\\xgboost.joblib",
+      "artifact_sha256": "794ee9dba4f9e3aa13c2d736ab617d993ac997a4f68d19eb1aa8caeba6348c5c",
+      "top_global_features": [
+        {
+          "feature": "sensor_id (one-hot)",
+          "importance": 0.34535760671133175
+        },
+        {
+          "feature": "rolling_speed_ratio_min_15m",
+          "importance": 0.30588915944099426
+        },
+        {
+          "feature": "current_speed_ratio",
+          "importance": 0.21962477266788483
+        },
+        {
+          "feature": "rolling_speed_ratio_mean_15m",
+          "importance": 0.03312954306602478
+        },
+        {
+          "feature": "historical_period_congestion_rate_train",
+          "importance": 0.02453407645225525
+        },
+        {
+          "feature": "rolling_speed_ratio_min_30m",
+          "importance": 0.015651671215891838
+        },
+        {
+          "feature": "hour_cos",
+          "importance": 0.005894608795642853
+        },
+        {
+          "feature": "hour_sin",
+          "importance": 0.005172701086848974
+        },
+        {
+          "feature": "current_speed_mph",
+          "importance": 0.004682378843426704
+        },
+        {
+          "feature": "hour",
+          "importance": 0.0036501751746982336
+        }
+      ]
+    }
+  ],
+  "selected_model": "XGBoost",
+  "selection_rule": "validation congestion-class F1, then Recall, then ROC-AUC",
+  "local_explanation_path": "reports\\modeling\\local_explanation.json",
+  "metrics_path": "reports\\modeling\\model_comparison.csv"
+}

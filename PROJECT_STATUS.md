@@ -6,6 +6,7 @@
 - 第二阶段：数据获取、数据审计和 EDA 准备已完成。
 - Phase 3A：数据清洗与正式EDA已完成。
 - M2：标签、历史特征与严格时间切分已完成。
+- M3：三模型训练、比较与基础解释已完成。
 - 模型训练：未开始。
 - 页面开发：未开始。
 
@@ -46,4 +47,13 @@
 
 ## 下一阶段边界
 
-下一阶段为M3：Logistic Regression、Random Forest、XGBoost训练、验证与比较。M2防泄漏检查已通过；M3必须继续保持测试集封闭，直到最终方案固定。
+下一阶段为Track B Dashboard与系统集成。模型和阈值已固定，页面只能消费版本化产物，不得在页面中重新训练或修改测试评价。
+
+## M3完成项
+
+- [x] 完成Logistic Regression、Random Forest、XGBoost训练。
+- [x] 完成Validation阈值选择和Test最终评价。
+- [x] 输出Accuracy、Precision、Recall、F1-score、ROC-AUC。
+- [x] 选择XGBoost作为最终模型。
+- [x] 输出ROC、混淆矩阵、全局重要性和局部反事实解释。
+- [x] 未将模型二进制提交到Git。
