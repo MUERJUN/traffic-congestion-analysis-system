@@ -21,6 +21,7 @@ from app.dashboard_utils import (  # noqa: E402
     load_json,
     load_model,
     load_sensor_history,
+    localize_feature_column,
     predict_history_row,
     risk_level,
 )
@@ -174,7 +175,13 @@ def page_prediction() -> None:
     st.subheader("最近60分钟速度比")
     current_index = history.index[history["timestamp"].astype(str) == timestamp][0]
     recent = history.loc[max(0, current_index - 12) : current_index].set_index("timestamp")
-    st.line_chart(recent[["current_speed_ratio", "lag_speed_ratio_5m"]])
+    chart = recent[["current_speed_ratio", "lag_speed_ratio_5m"]].rename(
+        columns={
+            "current_speed_ratio": "当前速度/自由流速度",
+            "lag_speed_ratio_5m": "5分钟前速度比",
+        }
+    )
+    st.line_chart(chart)
 
     st.subheader("主要影响因素")
     explanation = explain_history_row(model, row)
@@ -183,6 +190,7 @@ def page_prediction() -> None:
         st.info("当前样本的解释产物不可用。")
     else:
         factors = factors[["feature", "observed_value", "reference_value", "risk_support_delta"]].copy()
+        factors = localize_feature_column(factors)
         factors.columns = ["因素", "当前值", "训练参考值", "风险支持变化"]
         st.dataframe(factors.head(5), use_container_width=True, hide_index=True)
         st.caption("风险支持变化为单因素训练参考反事实对照，不是因果效应。")
@@ -211,6 +219,7 @@ def page_report() -> None:
     st.image(load_image_bytes("reports/modeling/figures/test_roc_curves.png"), use_container_width=True)
 
     st.subheader("影响因素排名")
+    importance = localize_feature_column(importance)
     st.dataframe(importance.head(15), use_container_width=True, hide_index=True)
     st.image(
         load_image_bytes("reports/modeling/figures/feature_importance_xgboost.png"),
