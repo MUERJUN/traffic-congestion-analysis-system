@@ -22,6 +22,8 @@ from app.dashboard_utils import (  # noqa: E402
     load_image_bytes,
     load_json,
     load_model,
+    load_sensor_edges,
+    load_sensor_locations,
     load_sensor_history,
     localize_feature_column,
     predict_history_row,
@@ -42,7 +44,6 @@ st.markdown(SHARED_DASHBOARD_CSS, unsafe_allow_html=True)
 st.markdown(
     """
     <style>
-    .replay-banner { padding: 0.65rem 1rem; border-radius: 0.5rem; background: #fff4ce; color: #6b4e00; margin-bottom: 1rem; }
     .metric-note { color: #6b7280; font-size: 0.85rem; }
     </style>
     """,
@@ -120,33 +121,73 @@ def show_replay_banner() -> None:
 
 
 def page_intro() -> None:
-    st.title("基于机器学习的城市道路拥堵风险预测与分析辅助系统")
-    show_replay_banner()
-    st.write(
-        "本系统将METR-LA道路传感器速度数据转化为时间规律、风险预测、模型解释和交通建议，"
-        "用于课程项目分析与历史案例复盘。"
+    st.markdown(
+        """
+        <section class="hero-panel">
+          <span class="eyebrow">METR-LA 历史交通数据回放</span>
+          <h1>城市道路拥堵风险预测与分析辅助系统</h1>
+          <p>
+            面向课程项目的交通数据挖掘 Demo：从历史速度数据出发，完成数据审计、规律分析、
+            拥堵风险预测、模型解释和交通优化建议展示。页面结果来自历史样本，不是实时交通系统。
+          </p>
+        </section>
+        """,
+        unsafe_allow_html=True,
     )
-    left, right = st.columns(2)
-    with left:
-        st.subheader("项目闭环")
-        st.markdown("问题提出 → 数据审计 → EDA → 历史特征 → 模型比较 → 解释 → 建议")
-        st.subheader("数据基线")
-        st.markdown(
-            "- 207个道路传感器\n"
-            "- 五分钟采样\n"
-            "- 2012-03-01至2012-06-27\n"
-            "- 0值按缺测候选处理"
-        )
-    with right:
-        st.subheader("系统能力")
-        st.markdown(
-            "- 查看时间规律和道路风险排行\n"
-            "- 选择历史传感器时点回放风险预测\n"
-            "- 查看拥堵概率、风险等级和主要因素\n"
-            "- 查看三模型评价与业务建议"
-        )
-        st.subheader("使用边界")
-        st.info("模型反映历史统计关联，不诊断事故或天气原因，也不替代交通管理人员决策。")
+
+    st.markdown(
+        """
+        <div class="kpi-grid">
+          <div class="kpi-card"><span>道路监测点</span><strong>207</strong></div>
+          <div class="kpi-card"><span>采样间隔</span><strong>5分钟</strong></div>
+          <div class="kpi-card"><span>历史时间范围</span><strong>2012.03-06</strong></div>
+          <div class="kpi-card"><span>建模目标</span><strong>未来30分钟</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <h3>项目闭环</h3>
+            <div class="process-bar">
+              <span>问题提出</span><span>数据审计</span><span>EDA</span><span>特征工程</span>
+              <span>模型比较</span><span>模型解释</span><span>业务建议</span>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <h3>系统能力</h3>
+            <ul>
+              <li>查看道路速度趋势、拥堵时间规律和风险排行</li>
+              <li>按日期和小时回放历史道路走廊拥堵分布</li>
+              <li>选择传感器编号，展示拥堵概率、风险等级和主要因素</li>
+              <li>对比三类机器学习模型并输出优化建议</li>
+            </ul>
+          </div>
+          <div class="dashboard-card">
+            <h3>数据基线</h3>
+            <ul>
+              <li>核心数据：METR-LA Traffic Dataset</li>
+              <li>时间连续，无断点；207个传感器完整</li>
+              <li>0值按疑似缺测候选处理，并保留敏感性对照</li>
+              <li>不融合天气等外部数据，避免口径混乱</li>
+            </ul>
+          </div>
+          <div class="dashboard-card">
+            <h3>使用边界</h3>
+            <ul>
+              <li>系统定位是历史数据回放式分析平台</li>
+              <li>模型解释反映历史统计关联，不等于因果诊断</li>
+              <li>不判断事故、天气等外部原因</li>
+              <li>分析结论用于辅助复盘，不替代交通管理决策</li>
+            </ul>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def page_analysis() -> None:
@@ -166,14 +207,27 @@ def page_analysis() -> None:
     cols[3].metric("最低速度小时", f"{summary['lowest_network_median_hour']}:00")
 
     st.subheader("时间规律")
-    selected_day_type = st.selectbox("查看日期类型", ["全部", "Weekday", "Weekend"])
+    selected_day_type = st.selectbox("查看日期类型", ["全部", "工作日", "周末"])
     if selected_day_type == "全部":
         chart_data = hourly.set_index("hour")[["median_speed_valid", "median_speed_keep_zero"]]
+        chart_data = chart_data.rename(
+            columns={
+                "median_speed_valid": "剔除0值后的速度中位数",
+                "median_speed_keep_zero": "保留0值的速度中位数",
+            }
+        )
     else:
-        filtered = day_type.loc[day_type["day_type"] == selected_day_type]
+        day_type_value = {"工作日": "Weekday", "周末": "Weekend"}[selected_day_type]
+        filtered = day_type.loc[day_type["day_type"] == day_type_value]
         chart_data = filtered.set_index("hour")[["median_speed_valid"]]
+        chart_data = chart_data.rename(columns={"median_speed_valid": "剔除0值后的速度中位数"})
     st.line_chart(chart_data)
-    st.caption("主线把0值作为缺测候选；橙色/对照口径保留0值，仅用于观察数据质量影响。")
+    st.markdown(
+        '<div class="explain-box">口径说明：METR-LA中有不少速度为0的记录。'
+        "它们不一定代表车辆真的完全停止，也可能是传感器异常或短时缺测。"
+        "剔除0值后的线用于观察主要交通规律；保留0值的线用于对照数据质量影响。</div>",
+        unsafe_allow_html=True,
+    )
 
     st.subheader("道路风险排行")
     top_n = st.slider("排行数量", min_value=5, max_value=20, value=10)
@@ -182,6 +236,114 @@ def page_analysis() -> None:
     ].copy()
     display_risk.columns = ["传感器", "有效覆盖率", "描述性拥堵率", "平均事件持续分钟"]
     st.dataframe(display_risk, use_container_width=True, hide_index=True)
+
+    heatmap = load_congestion_heatmap()
+    locations = load_sensor_locations()
+
+    st.subheader("道路走廊拥堵热力图")
+    if heatmap.empty or locations.empty:
+        st.info("本地测试集特征或传感器经纬度文件不可用，暂时无法生成地图热力图。")
+    else:
+        map_dates = sorted(heatmap["date"].unique())
+        map_date = st.selectbox("选择地图日期", map_dates, index=len(map_dates) - 1, key="map_date")
+        hour_labels = [f"{hour:02d}:00" for hour in range(24)]
+        map_hour_label = st.selectbox("选择地图小时", hour_labels, index=17, key="map_hour")
+        map_hour = int(map_hour_label.split(":")[0])
+        map_data = heatmap.loc[
+            (heatmap["date"] == map_date) & (heatmap["hour"] == map_hour)
+        ].merge(locations, how="inner", on="sensor_id")
+        if map_data.empty:
+            st.info("当前日期和小时没有可展示的传感器点位。")
+        else:
+            map_data = map_data.copy()
+            map_data["congestion_percent"] = map_data["congestion_rate"] * 100
+            edges = load_sensor_edges()
+            from_points = map_data.rename(
+                columns={
+                    "sensor_id": "from_sensor_id",
+                    "latitude": "from_latitude",
+                    "longitude": "from_longitude",
+                    "congestion_percent": "from_congestion_percent",
+                }
+            )[["from_sensor_id", "from_latitude", "from_longitude", "from_congestion_percent"]]
+            to_points = map_data.rename(
+                columns={
+                    "sensor_id": "to_sensor_id",
+                    "latitude": "to_latitude",
+                    "longitude": "to_longitude",
+                    "congestion_percent": "to_congestion_percent",
+                }
+            )[["to_sensor_id", "to_latitude", "to_longitude", "to_congestion_percent"]]
+            edge_data = edges.merge(from_points, how="inner", on="from_sensor_id").merge(
+                to_points, how="inner", on="to_sensor_id"
+            )
+            edge_data["congestion_percent"] = (
+                edge_data["from_congestion_percent"] + edge_data["to_congestion_percent"]
+            ) / 2
+            risk_bands = [
+                (0, 20, "0-20% 低拥堵", "#fff7bc", 4),
+                (20, 40, "20-40% 轻度拥堵", "#fec44f", 5),
+                (40, 60, "40-60% 中度拥堵", "#fe9929", 6),
+                (60, 80, "60-80% 高拥堵", "#f03b20", 7),
+                (80, 101, "80%以上 严重拥堵", "#bd0026", 8),
+            ]
+            map_figure = go.Figure()
+            for low, high, label, color, width in risk_bands:
+                band = edge_data.loc[
+                    (edge_data["congestion_percent"] >= low)
+                    & (edge_data["congestion_percent"] < high)
+                ]
+                if band.empty:
+                    continue
+                latitudes: list[float | None] = []
+                longitudes: list[float | None] = []
+                customdata: list[list[object] | list[None]] = []
+                for row in band.itertuples(index=False):
+                    segment_data = [
+                        row.from_sensor_id,
+                        row.to_sensor_id,
+                        float(row.congestion_percent),
+                        float(row.distance),
+                    ]
+                    latitudes.extend([row.from_latitude, row.to_latitude, None])
+                    longitudes.extend([row.from_longitude, row.to_longitude, None])
+                    customdata.extend([segment_data, segment_data, [None, None, None, None]])
+                map_figure.add_trace(
+                    go.Scattermapbox(
+                        lat=latitudes,
+                        lon=longitudes,
+                        mode="lines",
+                        line={"color": color, "width": width},
+                        name=label,
+                        customdata=customdata,
+                        hovertemplate=(
+                            "传感器走廊 %{customdata[0]} → %{customdata[1]}<br>"
+                            "时间 " + map_date + f" {map_hour_label}<br>"
+                            "走廊拥堵率 %{customdata[2]:.1f}%<br>"
+                            "传感器间距 %{customdata[3]:.0f}<extra></extra>"
+                        ),
+                    )
+                )
+            map_figure.update_layout(
+                height=620,
+                mapbox={
+                    "style": "carto-positron",
+                    "center": {
+                        "lat": float(map_data["latitude"].mean()),
+                        "lon": float(map_data["longitude"].mean()),
+                    },
+                    "zoom": 9.3,
+                },
+                legend={"title": {"text": "走廊拥堵率"}, "orientation": "h", "y": 0.01},
+                margin={"l": 0, "r": 0, "t": 10, "b": 10},
+            )
+            st.plotly_chart(map_figure, use_container_width=True)
+            st.caption(
+                "说明：线段连接相邻传感器，颜色表示该传感器走廊在所选日期和小时的未来30分钟拥堵率。"
+            )
+            st.caption(
+                "这是基于 METR-LA 传感器坐标和距离关系构建的近似道路走廊，不是官方道路几何线段。"
+            )
 
     st.subheader("道路—小时拥堵热力图")
     heatmap = load_congestion_heatmap()
@@ -219,14 +381,96 @@ def page_analysis() -> None:
 
     st.subheader("速度趋势")
     trend = daily.set_index("date")[["mean_speed_valid", "mean_speed_keep_zero"]]
+    trend = trend.rename(
+        columns={
+            "mean_speed_valid": "剔除0值后的平均速度",
+            "mean_speed_keep_zero": "保留0值的平均速度",
+        }
+    )
     st.line_chart(trend)
-    st.caption("有效速度均值与保留0均值使用相同统计量进行敏感性对照。")
+    st.markdown(
+        '<div class="explain-box">口径说明：剔除0值后的平均速度更接近正常道路运行状态；'
+        "保留0值的平均速度会把疑似缺测/异常0值也算进去，因此可能出现突然下跌。"
+        "两条线放在一起，是为了说明0值处理会不会明显影响趋势判断。</div>",
+        unsafe_allow_html=True,
+    )
 
     st.subheader("拥堵前兆")
-    st.image(
-        load_image_bytes("reports/eda/figures/pre_congestion_profile.png"),
-        caption="持续拥堵事件起点前后的速度比中位数",
-        use_container_width=True,
+    pre_profile = load_csv("reports/eda/tables/pre_congestion_profile.csv")
+    pre_figure = go.Figure()
+    pre_figure.add_trace(
+        go.Scatter(
+            x=pre_profile["relative_minutes"],
+            y=pre_profile["event_p75_speed_ratio"],
+            mode="lines",
+            line={"width": 0},
+            showlegend=False,
+            hoverinfo="skip",
+        )
+    )
+    pre_figure.add_trace(
+        go.Scatter(
+            x=pre_profile["relative_minutes"],
+            y=pre_profile["event_p25_speed_ratio"],
+            mode="lines",
+            fill="tonexty",
+            fillcolor="rgba(56, 189, 248, 0.18)",
+            line={"width": 0},
+            name="拥堵事件波动范围",
+            hoverinfo="skip",
+        )
+    )
+    pre_figure.add_trace(
+        go.Scatter(
+            x=pre_profile["relative_minutes"],
+            y=pre_profile["event_median_speed_ratio"],
+            mode="lines+markers",
+            name="拥堵事件速度比中位数",
+            line={"color": "#38bdf8", "width": 3},
+            marker={"size": 6},
+            hovertemplate="相对拥堵起点 %{x} 分钟<br>速度比中位数 %{y:.3f}<extra></extra>",
+        )
+    )
+    pre_figure.add_trace(
+        go.Scatter(
+            x=pre_profile["relative_minutes"],
+            y=pre_profile["control_median_speed_ratio"],
+            mode="lines+markers",
+            name="正常对照速度比中位数",
+            line={"color": "#f97316", "width": 3},
+            marker={"size": 6},
+            hovertemplate="相对对照时点 %{x} 分钟<br>速度比中位数 %{y:.3f}<extra></extra>",
+        )
+    )
+    pre_figure.add_vline(
+        x=0,
+        line_dash="dash",
+        line_color="#ef4444",
+        annotation_text="拥堵开始",
+        annotation_position="top",
+    )
+    pre_figure.add_hline(
+        y=0.6,
+        line_dash="dot",
+        line_color="#ef4444",
+        annotation_text="低速阈值",
+        annotation_position="bottom right",
+    )
+    pre_figure.update_layout(
+        title="持续拥堵发生前后的速度变化",
+        height=520,
+        xaxis_title="距离拥堵开始的时间（分钟）",
+        yaxis_title="速度比（当前速度 / 自由流速度）",
+        font={"family": "Microsoft YaHei, SimHei, Arial Unicode MS, sans-serif"},
+        legend={"orientation": "h", "y": -0.22},
+        margin={"l": 20, "r": 20, "t": 70, "b": 95},
+    )
+    pre_figure.update_yaxes(range=[0, 1.05], tickformat=".0%")
+    st.plotly_chart(pre_figure, use_container_width=True)
+    st.markdown(
+        '<div class="explain-box">图中蓝线表示发生持续拥堵的道路在拥堵前后的速度变化；'
+        "橙线表示正常对照时段。蓝线在0分钟前持续下降，说明拥堵发生前已经出现明显降速信号。</div>",
+        unsafe_allow_html=True,
     )
     st.success(
         f"业务发现：工作日7—9时比周末同期低{abs(summary['weekday_vs_weekend_7_9_speed_difference']):.2f} mph；"
@@ -318,21 +562,109 @@ def page_report() -> None:
     selected_result = next(item for item in summary["model_results"] if item["model"] == selected)
 
     st.subheader("模型评价")
+    selected_display = {
+        "Logistic Regression": "逻辑回归",
+        "Random Forest": "随机森林",
+        "XGBoost": "XGBoost",
+    }.get(selected, selected)
     st.success(
-        f"最终模型：{selected}；Validation F1={selected_result['validation']['f1']:.4f}，"
-        f"Test F1={selected_result['test']['f1']:.4f}。"
+        f"最终模型：{selected_display}；验证集F1={selected_result['validation']['f1']:.4f}，"
+        f"测试集F1={selected_result['test']['f1']:.4f}。"
     )
     st.dataframe(format_model_metrics(metrics, selected), use_container_width=True, hide_index=True)
-    st.image(load_image_bytes("reports/modeling/figures/model_comparison.png"), use_container_width=True)
-    st.image(load_image_bytes("reports/modeling/figures/test_roc_curves.png"), use_container_width=True)
+
+    model_names = {
+        "Logistic Regression": "逻辑回归",
+        "Random Forest": "随机森林",
+        "XGBoost": "XGBoost",
+    }
+    metric_labels = {
+        "accuracy": "准确率",
+        "precision": "精确率",
+        "recall": "召回率",
+        "f1": "F1分数",
+        "roc_auc": "ROC-AUC",
+    }
+    metrics_plot = metrics.copy()
+    metrics_plot["model_display"] = metrics_plot["model"].map(model_names).fillna(metrics_plot["model"])
+    metric_long = metrics_plot.melt(
+        id_vars=["model_display"],
+        value_vars=list(metric_labels),
+        var_name="metric",
+        value_name="score",
+    )
+    metric_long["metric_display"] = metric_long["metric"].map(metric_labels)
+    comparison_figure = go.Figure()
+    for metric_key, metric_label in metric_labels.items():
+        part = metric_long.loc[metric_long["metric"] == metric_key]
+        comparison_figure.add_trace(
+            go.Bar(
+                x=part["model_display"],
+                y=part["score"],
+                name=metric_label,
+                hovertemplate="模型 %{x}<br>" + metric_label + " %{y:.4f}<extra></extra>",
+            )
+        )
+    comparison_figure.update_layout(
+        title="不同模型测试集指标对比",
+        height=520,
+        barmode="group",
+        xaxis_title="模型",
+        yaxis_title="指标得分",
+        yaxis={"range": [0, 1]},
+        font={"family": "Microsoft YaHei, SimHei, Arial Unicode MS, sans-serif"},
+        legend={"orientation": "h", "y": -0.22},
+        margin={"l": 20, "r": 20, "t": 70, "b": 95},
+    )
+    st.plotly_chart(comparison_figure, use_container_width=True)
+
+    roc_figure = go.Figure(
+        go.Bar(
+            x=metrics_plot["model_display"],
+            y=metrics_plot["roc_auc"],
+            marker_color=["#60a5fa", "#34d399", "#f97316"],
+            text=metrics_plot["roc_auc"].map(lambda value: f"{value:.4f}"),
+            textposition="outside",
+            hovertemplate="模型 %{x}<br>测试集ROC-AUC %{y:.4f}<extra></extra>",
+        )
+    )
+    roc_figure.update_layout(
+        title="模型区分能力对比（ROC-AUC）",
+        height=420,
+        xaxis_title="模型",
+        yaxis_title="ROC-AUC 得分",
+        yaxis={"range": [0.95, 1.0]},
+        font={"family": "Microsoft YaHei, SimHei, Arial Unicode MS, sans-serif"},
+        showlegend=False,
+        margin={"l": 20, "r": 20, "t": 70, "b": 70},
+    )
+    st.plotly_chart(roc_figure, use_container_width=True)
 
     st.subheader("影响因素排名")
     importance = localize_feature_column(importance)
-    st.dataframe(importance.head(15), use_container_width=True, hide_index=True)
-    st.image(
-        load_image_bytes("reports/modeling/figures/feature_importance_xgboost.png"),
-        use_container_width=True,
+    importance_display = importance.rename(columns={"feature": "影响因素", "importance": "重要性得分"})
+    st.dataframe(importance_display.head(15), use_container_width=True, hide_index=True)
+    importance_plot = importance_display.head(12).sort_values("重要性得分", ascending=True)
+    importance_figure = go.Figure(
+        go.Bar(
+            x=importance_plot["重要性得分"],
+            y=importance_plot["影响因素"],
+            orientation="h",
+            marker_color="#38bdf8",
+            text=importance_plot["重要性得分"].map(lambda value: f"{value:.3f}"),
+            textposition="outside",
+            hovertemplate="影响因素 %{y}<br>重要性得分 %{x:.4f}<extra></extra>",
+        )
     )
+    importance_figure.update_layout(
+        title="XGBoost模型影响因素重要性排名",
+        height=560,
+        xaxis_title="重要性得分",
+        yaxis_title="影响因素",
+        font={"family": "Microsoft YaHei, SimHei, Arial Unicode MS, sans-serif"},
+        margin={"l": 20, "r": 80, "t": 70, "b": 70},
+    )
+    st.plotly_chart(importance_figure, use_container_width=True)
 
     st.subheader("业务建议")
     st.markdown(
@@ -345,8 +677,8 @@ def page_report() -> None:
 
 
 def main() -> None:
-    st.sidebar.title("系统导航")
-    st.sidebar.caption("METR-LA历史交通数据回放")
+    st.sidebar.title("交通分析平台")
+    st.sidebar.caption("METR-LA 历史回放")
     page = st.sidebar.radio(
         "选择页面",
         ["项目介绍", "数据分析", "预测展示", "分析报告"],
