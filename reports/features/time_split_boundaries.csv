@@ -1,0 +1,4 @@
+﻿name,observation_start_index,observation_end_index,observation_count,observation_start_timestamp,observation_end_timestamp,sample_start_index_after_history_purge,sample_end_index_before_future_purge,sample_start_timestamp_after_history_purge,sample_end_timestamp_before_future_purge
+train,0,23989,23990,2012-03-01 00:00:00,2012-05-23 07:05:00,12,23983,2012-03-01 01:00:00,2012-05-23 06:35:00
+validation,23990,27416,3427,2012-05-23 07:10:00,2012-06-04 04:40:00,24002,27410,2012-05-23 08:10:00,2012-06-04 04:10:00
+test,27417,34271,6855,2012-06-04 04:45:00,2012-06-27 23:55:00,27429,34265,2012-06-04 05:45:00,2012-06-27 23:25:00

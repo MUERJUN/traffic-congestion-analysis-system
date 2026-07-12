@@ -1,0 +1,22 @@
+{
+  "model_dataset_dir": "data/processed/model_dataset",
+  "report_dir": "reports/modeling",
+  "artifact_dir": "artifacts/models",
+  "train_sample_max_rows": 1000000,
+  "random_state": 42,
+  "validation_threshold_grid_start": 0.10,
+  "validation_threshold_grid_stop": 0.90,
+  "validation_threshold_grid_step": 0.01,
+  "logistic_max_iter": 100,
+  "random_forest_estimators": 120,
+  "random_forest_max_depth": 16,
+  "random_forest_min_samples_leaf": 5,
+  "xgboost_estimators": 200,
+  "xgboost_max_depth": 8,
+  "xgboost_learning_rate": 0.08,
+  "xgboost_subsample": 0.8,
+  "xgboost_colsample_bytree": 0.8,
+  "xgboost_min_child_weight": 5,
+  "xgboost_n_jobs": 4
+}
+
