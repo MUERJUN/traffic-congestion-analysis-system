@@ -1,5 +1,6 @@
 # Local environments and Python caches
 .venv/
+.runtime-venv/
 venv/
 __pycache__/
 *.egg-info/
@@ -48,3 +49,4 @@ artifacts/explanations/*
 streamlit_output.txt
 streamlit_error.txt
 dist/
+submission_parts/

@@ -1,3 +1,4 @@
+import ast
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -46,3 +47,20 @@ def test_launcher_source_uses_gbk_safe_status_text() -> None:
 
     assert "✓" not in source
     assert "[已有]" in source
+
+
+def test_launcher_parses_as_python_37_and_avoids_new_path_api() -> None:
+    source = (Path(__file__).resolve().parents[1] / "run_dashboard.py").read_text(encoding="utf-8")
+
+    ast.parse(source, feature_version=(3, 7))
+    assert ":=" not in source
+    assert "missing_ok=" not in source
+
+
+def test_cross_platform_launcher_selects_supported_python_and_creates_venv() -> None:
+    source = (Path(__file__).resolve().parents[1] / "run_dashboard.py").read_text(encoding="utf-8")
+
+    assert '("3.13", "3.12", "3.11", "3.10", "3.9")' in source
+    assert 'f"python{version}"' in source
+    assert ".runtime-venv" in source
+    assert "venv" in source

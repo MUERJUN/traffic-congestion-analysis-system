@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -11,6 +13,7 @@ from zipfile import BadZipFile, ZipFile
 
 
 ROOT = Path(__file__).resolve().parent
+MIN_PYTHON = (3, 9)
 OPTIONAL_PACKAGE_NAMES = {
     "02_raw_metr_la.zip",
     "03_interim_data_part1.zip",
@@ -77,8 +80,10 @@ def safe_extract_package(package: Path, root: Path = ROOT) -> None:
 def file_sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
-        while chunk := handle.read(1024 * 1024):
+        chunk = handle.read(1024 * 1024)
+        while chunk:
             digest.update(chunk)
+            chunk = handle.read(1024 * 1024)
     return digest.hexdigest()
 
 
@@ -91,10 +96,13 @@ def restore_file_from_parts(root: Path, relative_target: str, part_names: tuple[
     with target.open("wb") as output:
         for part in parts:
             with part.open("rb") as source:
-                while chunk := source.read(1024 * 1024):
+                chunk = source.read(1024 * 1024)
+                while chunk:
                     output.write(chunk)
+                    chunk = source.read(1024 * 1024)
     if file_sha256(target) != expected_hash:
-        target.unlink(missing_ok=True)
+        if target.exists():
+            target.unlink()
         raise ValueError(f"{relative_target} 分片校验失败")
     print(f"  已恢复并校验：{relative_target}")
     return True
@@ -129,6 +137,70 @@ def restore_maximum_available(root: Path = ROOT) -> dict[str, bool]:
     for label, ready in status.items():
         print(f"  {'[已有]' if ready else '[缺少]'} {label}")
     return status
+
+
+def interpreter_candidates() -> list[list[str]]:
+    versions = ("3.13", "3.12", "3.11", "3.10", "3.9")
+    candidates = [[f"python{version}"] for version in versions]
+    if os.name == "nt":
+        candidates = [["py", f"-{version}"] for version in versions] + candidates
+    candidates.extend([["python3"], ["python"]])
+    return candidates
+
+
+def command_is_supported_python(command: list[str]) -> bool:
+    executable = shutil.which(command[0])
+    if executable is None:
+        return False
+    result = subprocess.call(
+        command + ["-c", "import sys; raise SystemExit(0 if sys.version_info >= (3, 9) else 1)"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return result == 0
+
+
+def relaunch_with_supported_python() -> int | None:
+    if sys.version_info >= MIN_PYTHON:
+        return None
+    print(
+        f"当前Python为 {sys.version_info.major}.{sys.version_info.minor}，"
+        "系统运行需要Python 3.9或更高版本。正在自动寻找兼容解释器……"
+    )
+    for command in interpreter_candidates():
+        if command_is_supported_python(command):
+            print(f"找到兼容解释器：{' '.join(command)}")
+            return subprocess.call(command + [str(Path(__file__).resolve())] + sys.argv[1:], cwd=ROOT)
+    print(
+        "未找到Python 3.9以上版本。请安装Python 3.9—3.13后再次运行：\n"
+        "  python run_dashboard.py",
+        file=sys.stderr,
+    )
+    return 2
+
+
+def runtime_python(venv_dir: Path) -> Path:
+    if os.name == "nt":
+        return venv_dir / "Scripts" / "python.exe"
+    return venv_dir / "bin" / "python"
+
+
+def ensure_runtime_environment(root: Path = ROOT) -> int | None:
+    """Create a project-local venv and relaunch this script inside it."""
+    if os.environ.get("TRAFFIC_DASHBOARD_RUNTIME") == "1":
+        return None
+    venv_dir = root / ".runtime-venv"
+    python_path = runtime_python(venv_dir)
+    if not python_path.exists():
+        print("正在创建项目专用Python环境：.runtime-venv")
+        subprocess.check_call([sys.executable, "-m", "venv", str(venv_dir)], cwd=root)
+    environment = os.environ.copy()
+    environment["TRAFFIC_DASHBOARD_RUNTIME"] = "1"
+    return subprocess.call(
+        [str(python_path), str(Path(__file__).resolve())] + sys.argv[1:],
+        cwd=root,
+        env=environment,
+    )
 
 
 def install_requirements(root: Path = ROOT) -> None:
@@ -185,6 +257,12 @@ def main() -> int:
         if args.restore_only:
             print("可用分包合并完成。")
             return 0
+        relaunched = relaunch_with_supported_python()
+        if relaunched is not None:
+            return relaunched
+        runtime_result = ensure_runtime_environment()
+        if runtime_result is not None:
+            return runtime_result
         if not args.skip_install:
             install_requirements()
         return launch_streamlit(args.port)
