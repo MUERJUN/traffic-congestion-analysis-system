@@ -45,3 +45,6 @@ artifacts/explanations/*
 *.log
 *.tmp
 ~$*
+streamlit_output.txt
+streamlit_error.txt
+dist/
